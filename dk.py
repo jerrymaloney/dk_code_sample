@@ -27,13 +27,14 @@ define the data structure as a list with two elements: the timestamp and a named
 Measurement = collections.namedtuple('Measurement', 'accelerometer_x_val, accelerometer_y_val, accelerometer_z_val, gyroscope_x_val, gyroscope_y_val, gyroscope_z_val')
 
 def loadLines():
+    global measurements
     l=[]
     data=open(datastore, 'r')
     for line in data:
         linelist=line.rstrip().split(',')
         timestamp=int(linelist[0])
         l.append([timestamp, Measurement(accelerometer_x_val=float(linelist[1]), accelerometer_y_val=float(linelist[2]), accelerometer_z_val=float(linelist[3]), gyroscope_x_val=float(linelist[4]), gyroscope_y_val=float(linelist[5]), gyroscope_z_val=float(linelist[6]))])
-    return sorted(l)
+    measurements=sorted(l)
 
 def printLines():
     pp.pprint(loadLines())
@@ -54,13 +55,13 @@ from indexBegin to indexEnd, search data for values that are higher than thresho
 programmer's note: After initially trying just straight iteration, I thought it would be most efficient to reduce the size of the dataset for analysis as quickly as possible, then see if we can make a sequence out of it.
 """
 def searchContinuityAboveValue(data, indexBegin, indexEnd, threshold, winLength):
+    global measurements
     validateParameters(data, indexBegin, winLength)
     # validate parameters unique to this function
     if indexBegin > indexEnd:
         raise IndexError("indexBegin must be less than or equal to indexEnd")
     
     # find the set of measurements that meet the criteria, with their list indices
-    measurements=loadLines()
     matchedMeasurements=[[measurements.index(measurement), measurement[0]] for measurement in measurements if getattr(measurement[1], data) > threshold]
     # eliminate unwanted indices from the comprehension
     limitedMeasurements=[matchedMeasurement for matchedMeasurement in matchedMeasurements if matchedMeasurement[1] >= indexBegin and matchedMeasurement[1] <= indexEnd]
@@ -81,6 +82,7 @@ programmer's note: I could do better at code re-use between the previous functio
 But re-using code would involve some variable name interpolation that would make the code harder to read.
 """
 def backSearchContinuityWithinRange(data, indexBegin, indexEnd, thresholdLo, thresholdHi, winLength):
+    global measurements
     validateParameters(data, indexEnd, winLength)
     # validate parameters unique to this function
     if indexEnd > indexBegin:
@@ -89,7 +91,6 @@ def backSearchContinuityWithinRange(data, indexBegin, indexEnd, thresholdLo, thr
         raise ValueError("thresholdLo must be less than or equal to thresholdHi")
     
     # find the set of measurements that meet the criteria, with their list indices
-    measurements=loadLines()
     matchedMeasurements=[[measurements.index(measurement), measurement[0]] for measurement in measurements if getattr(measurement[1], data) > thresholdLo and getattr(measurement[1], data) < thresholdHi]
     # eliminate unwanted indices from the comprehension
     limitedMeasurements=[matchedMeasurement for matchedMeasurement in matchedMeasurements if matchedMeasurement[1] >= indexEnd and matchedMeasurement[1] <= indexBegin]
@@ -109,10 +110,10 @@ def backSearchContinuityWithinRange(data, indexBegin, indexEnd, thresholdLo, thr
 from indexBegin to indexEnd, search data1 for values that are higher than threshold1 and also search data2 for values that are higher than threshold2. Return the first index where both data1 and data2 have values that meet these criteria for at least winLength samples.
 """
 def searchContinuityAboveValueTwoSignals(data1, data2, indexBegin, indexEnd, threshold1, threshold2, winLength):
-    raise NotImplemetedError()
+    raise NotImplementedError()
 
 """
 from indexBegin to indexEnd, search data for values that are higher than thresholdLo and lower than thresholdHi. Return the the starting index and ending index of all continuous samples that meet this criteria for at least winLength data points.
 """
 def searchMultiContinuityWithinRange(data, indexBegin, indexEnd, thresholdLo, thresholdHi, winLength):
-    raise NotImplemetedError()
+    raise NotImplementedError()

@@ -3,6 +3,7 @@ from dk import *
 
 class TestDk(unittest.TestCase):
     def setUp(self):
+        loadLines()
         pass
     
     def test_sorted(self):
