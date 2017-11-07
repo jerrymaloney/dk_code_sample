@@ -37,8 +37,10 @@ def loadLines():
     measurements=sorted(l)
 
 def printLines():
-    pp.pprint(loadLines())
-    print len(loadLines())
+    global measurements
+    loadLines()
+    pp.pprint(measurements)
+    print len(measurements)
 
 
 def validateParameters(data, indexBegin, winLength):
